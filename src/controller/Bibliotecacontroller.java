@@ -3,20 +3,20 @@ package controller;
 import exception.EmprestimoException;
 import exception.LeitorNaoEncontrado;
 import exception.LivroNaoEncontrado;
-import model.Emprestimo;
-import model.Leitor;
-import model.Livro;
-import util.ArquivoTexto;
-import util.ConexaoPostgres;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import model.Emprestimo;
+import model.Leitor;
+import model.Livro;
+import util.ArquivoTexto;
+import util.ConexaoPostgres;
 
 public class Bibliotecacontroller {
     private Map<Integer, Livro> livros;
@@ -34,7 +34,7 @@ public class Bibliotecacontroller {
         proximoEmprestimo = 1;
     }
     public void cadastrarLivro(String titulo, String autor, String genero, int ano) {
-        String sql = "INSERT INTO livros(titulo, autor, genero, ano_publicacao) VALUES (?, ?, ?, ?) RETURNING codigo";
+        String sql = "INSERT INTO livro(titulo, autor, genero, anopublicacao) VALUES (?, ?, ?, ?) RETURNING codigo";
         try (Connection conexao = ConexaoPostgres.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setString(1, titulo);
@@ -250,14 +250,14 @@ public class Bibliotecacontroller {
             try (Connection conexao = ConexaoPostgres.conectar()) {
                 try (Statement comando = conexao.createStatement();
                      ResultSet resultado = comando.executeQuery(
-                             "SELECT codigo, titulo, autor, genero, ano_publicacao, disponivel FROM livros")) {
+                             "SELECT codigo, titulo, autor, genero, anopublicacao, disponivel FROM livro")) {
                     while (resultado.next()) {
                         Livro livro = new Livro(
                                 resultado.getInt("codigo"),
                                 resultado.getString("titulo"),
                                 resultado.getString("autor"),
                                 resultado.getString("genero"),
-                                resultado.getInt("ano_publicacao"));
+                                resultado.getInt("anopublicacao"));
                         if (!resultado.getBoolean("disponivel")) {
                             livro.emprestar();
                         }
